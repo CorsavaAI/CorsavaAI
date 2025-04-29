@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Corsava | AI Agent Infrastructure Development Kit</title>
+  <meta name="description" content="Build, deploy, and monetize AI agents across multiple blockchains">
+
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3aa7c1',
+            accent: '#00ff00',
+            dark: {
+              900: '#0f1419',
+              800: '#151a21',
+              700: '#1c232d',
+              600: '#252d3a',
+              500: '#323d4d',
+            },
+          },
+          fontFamily: {
+            sans: ['DM Sans', 'Helvetica', 'Arial', 'sans-serif'],
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'gradient-shift': 'gradient-shift 8s ease infinite',
+            'pattern-move': 'pattern-move 20s linear infinite',
+},
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    body {
+      font-family: 'Archivo', Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-color: #0f1419;
+      color: #f3f4f6;
+    }
+    
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    body {
+      -ms-overflow-style: none;  
+      scrollbar-width: none; 
+    }
+    
+    a, button {
+      transition: all 0.2s ease-in-out;
+    }
+    
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-20px);
+      }
+      100% {
+        transform: translateY(0px);
+      }
+    }
+    
+    .animate-float {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    #mouse-follower {
+      pointer-events: none;
+      position: fixed;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 1px solid #3aa7c1;
+      opacity: 0.5;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      transition: transform 0.3s ease-out;
+    }
+    
+    #mouse-dot {
+      pointer-events: none;
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #3aa7c1;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      transition: transform 0.1s ease-out;
+    }
+    
+    .accent-glow {
+      filter: drop-shadow(0 0 8px rgba(0, 255, 0, 0.3));
+    }
+    
+    .text-gradient {
+      background: linear-gradient(90deg, #3aa7c1 0%, #00ff00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+
+      .dynamic-bg {
+  background-size: 150% 150%;
+  animation: gradient-shift 10s ease infinite;
+  }
+
+  .dynamic-bg-1 {
+    background: linear-gradient(45deg, #3aa7c1, #252d3a);
+  }
+
+  .dynamic-bg-2 {
+    background: linear-gradient(45deg, #4a8f00, #252d3a);
+  }
+
+  .dynamic-bg-3 {
+    background: linear-gradient(45deg, #9c4a7a, #252d3a);
+  }
+
+  .dynamic-bg-4 {
+    background: linear-gradient(45deg, #c17b3a, #252d3a);
+  }
+
+  .dynamic-bg-5 {
+    background: linear-gradient(45deg, #3a66c1, #252d3a);
+  }
+
+  .use-case-card {
+    transition: all 0.3s ease;
+  }
+
+  .use-case-card:hover .icon-container {
+    transform: translateY(-3px);
+  }
+
+  .use-case-card:hover .dynamic-icon {
+    transform: scale(1.1);
+  }
+
+  .icon-container {
+    transition: transform 0.3s ease;
+  }
+
+  .dynamic-icon {
+    transition: transform 0.3s ease;
+  }
+
+  @keyframes gradient-shift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+    }
+  </style>
+</head>
+<body class="bg-dark-900">
+  <div id="mouse-dot"></div>
+
+  <nav class="fixed w-full z-40 transition-all duration-300 py-6" id="navbar">
+    <div class="container-fluid px-8 md:px-12 flex justify-between items-center">
+      <a href="#" class="flex items-center text-2xl font-bold tracking-tight cursor-pointer">
+        <svg
+          id="Layer_1"
+          class="h-16 w-auto mr-4"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          viewBox="0 0 3959 1552.28"
+        >
+          <defs>
+            <style>
+              .cls-1{fill:#b3b3b3;}
+              .cls-1,.cls-2,.cls-3,.cls-4,.cls-5,.cls-6,.cls-7{stroke-width:0px;}
+              .cls-2{fill:#3aa7c1;}
+              .cls-8,.cls-9,.cls-10,.cls-11,.cls-12,.cls-13,.cls-14,.cls-15,.cls-16,.cls-17{stroke-miterlimit:10;}
+              .cls-8,.cls-9,.cls-13,.cls-15,.cls-16,.cls-17{stroke-width:11px;}
+              .cls-8,.cls-11,.cls-12,.cls-14,.cls-15,.cls-16{fill:none;}
+              .cls-8,.cls-12{stroke:#ccc;}
+              .cls-9,.cls-13{fill:#999;}
+              .cls-9,.cls-17{stroke:#b3b3b3;}
+              .cls-10{fill:#000;stroke:#1a1a1a;stroke-width:13px;}
+              .cls-3{fill:#2d8796;}
+              .cls-11,.cls-12,.cls-14{stroke-width:20px;}
+              .cls-11,.cls-13,.cls-15{stroke:#999;}
+              .cls-4{fill:#1a1a1a;}
+              .cls-5{fill:lime;}
+              .cls-18{opacity:.54;}
+              .cls-14{stroke:#3d92b7;}
+              .cls-6{fill:#3d92b7;}
+              .cls-16{stroke:#e6e6e6;}
+              .cls-17{fill:#4d4d4d;}
+              .cls-7{fill:#e6e6e6;}
+            </style>
+          </defs>
+
+          <polyline class="cls-7" points="3046.91 852.5 3014.77 869.29 2920.61 918.47 2929.64 1011.08 2955.56 1036.41 2987.49 1017.22 2983.76 1057.92 3019.5 1160.5 3074.07 1249.68 3116.84 1267.13 3173.32 1244.96 3238.41 1145.33 3259.93 1067.17 3246.72 1002.11 3287.12 1038.81 3312.79 1021.27 3325.65 927.5 3313.5 864.5 3101.5 818.5"/>
+          <polygon class="cls-7" points="3239.82 1021.27 3276 1008 3254 992 3230.63 1006.63 3239.82 1021.27"/>
+          <polygon class="cls-2" points="2935 666 2971.72 550.38 3112 586.53 3247.79 550.62 3288 662.16 3163 660 3123.13 684.22 3069 677 3014 657 2979.34 672.36 2935 666"/>
+          <path class="cls-1" d="M3099.61,875.33l20.04,116.67v88.64s-22.36,12.36-29.36,43.36-38,93-38,93l-52.82-61.25v-28.85l-.27-32.32-10.91-15.06-9.68-19.16-7.13-39.09-28.19,11.48-13.13-26.12-16.52-41.72,16.65-58.91,86.36-39.95,82.97,9.27Z"/>
+          <line class="cls-10" x1="2930.16" y1="1006.63" x2="3002.93" y2="984.08"/>
+          <path class="cls-11" d="M2918.05,908.83s-12.12,110.4,37.54,127.53c0,0,32.73-46.81,71.11,5.71"/>
+          <path class="cls-11" d="M2986.07,1023.8s-6.52,20.87-3.26,41.26c3.26,20.39,21.32,48.94,21.32,48.94,0,0-5.64,29.69,6.77,44.53,0,0,21.45,26.26,34.99,49.1,0,0,20.32,58.23,71.11,59.37"/>
+          <polygon class="cls-1" points="3118.76 1226.9 3151 1250 3148 1265 3111 1262 3102 1244 3118.76 1226.9"/>
+          <path class="cls-12" d="M3324.63,912.84s12.11,109.05-37.51,125.97c0,0-32.71-46.24-71.05,5.64"/>
+          <path class="cls-12" d="M3256.67,1026.41s6.51,20.61,3.26,40.76c-3.26,20.14-21.3,48.34-21.3,48.34,0,0,5.64,29.32-6.77,43.98,0,0-21.43,25.94-34.96,48.5,0,0-20.3,57.52-71.05,58.65"/>
+          <path class="cls-11" d="M3087.16,1259s26.75,18,67.84,0"/>
+          <path class="cls-3" d="M2937.23,653.68l85.82-27.73c1.87-.61,3.92-.36,5.6.66l75.5,45.96c2.08,1.26,4.67,1.32,6.8.14l83.52-46.15c1.8-.99,3.94-1.12,5.84-.34l84.65,34.69c1.91.78,3.36,2.4,3.94,4.39l11.86,41.12c1.56,5.41-3.78,10.25-9.01,8.17l-74.73-29.81c-2.46-1.07-5.33-.4-6.89,1.45l-60.57,38.41c-1.59,1.01-3.52,1.31-5.34.83l-65.4-17.07c-2.06-.52-4.15.25-5.53,1.85l-34.01,21.36c-2.06,1.29-4.66,1.38-6.81.23l-81.29,43.68c-2.1,1.13-4.64,1.07-6.69-.16l-9.61-5.77c-2.81-1.68-4.01-5.13-2.85-8.19l17.35-46.04c.73-1.93,2.29-3.42,4.25-4.06Z"/>
+          <path class="cls-15" d="M3002.93,1021.27s2.79,60.62,23.68,73.31"/>
+          <path class="cls-2" d="M3451.43,753.68l-90.25-8.76-110.18-31.9-27.71-22.59-24.81-21.74-85.87,62.21s-.38.45-1.05,1.32l1.05-12.6-87.62-51.14-103.89,56.88-130.48,30.64-154-25.1,212.93,210.71,53-32.78,197.08-33.5,181.9,24.52,94.22,41.65,212.76-210.5-137.07,22.68Z"/>
+          <path class="cls-3" d="M2653.49,736.15l225.46,145.53c1.28.83,2.87.98,4.29.41,20.27-8.21,172.37-69.07,224.63-67.99,2.56.05,4.62,2.13,4.61,4.69l-.15,50.98c0,2.44-1.89,4.46-4.32,4.65l-110.55,8.53c-.41.03-.82.12-1.22.26l-123,43.97c-.59.21-1.23.3-1.86.26l-47.69-2.88c-1.17-.07-2.28-.58-3.09-1.43l-173.03-179.81c-1.18-1.23-1.6-3-1.1-4.63h0c.92-2.96,4.4-4.23,7.01-2.55Z"/>
+          <path class="cls-3" d="M3571.01,736.29l-225.46,145.53c-1.28.83-2.87.98-4.29.41-20.27-8.21-172.37-69.07-224.63-67.99-2.56.05-4.62,2.13-4.61,4.69l.15,50.98c0,2.44,1.89,4.46,4.32,4.65l110.55,8.53c.41.03.82.12,1.22.26l123,43.97c.59.21,1.23.3,1.86.26l47.69-2.88c1.17-.07,2.28-.58,3.09-1.43l173.03-179.81c1.18-1.23,1.6-3,1.1-4.63h0c-.92-2.96-4.4-4.23-7.01-2.55Z"/>
+          <polygon class="cls-2" points="3227 719 3244 704 3271 713.02 3288 727 3271 738.62 3260.18 738.62 3227 719"/>
+          <polygon class="cls-3" points="2840 917 2830.44 927.5 2852 936 2870.49 929.94 2852 914 2840 917"/>
+          <polygon class="cls-3" points="3366.31 912.04 3356.75 922.54 3378.31 931.04 3396.79 924.99 3378.31 909.04 3366.31 912.04"/>
+          <line class="cls-10" x1="3041" y1="942" x2="3082.17" y2="870.81"/>
+          <path class="cls-8" d="M3239.82,1026.48s-2.79,60.62-23.68,73.31"/>
+          <path class="cls-14" d="M3200.23,668.94c-.59-.43-1.4-.28-1.82.31-24.86,35.35-79.44,47.65-85.52,48.93v-.34s-59.73-11.58-86.08-49.05c-.42-.6-1.23-.75-1.82-.31-16.92,12.43-232.56,165.77-407.55,36.13-1.25-.92-2.78.69-1.78,1.88,37.16,43.65,192.38,223.68,233.88,235.11.36.1.74.03,1.05-.18,7.57-5.01,103.08-66.11,261.73-67.34v.44c158.99,1.08,254.71,62.32,262.29,67.34.31.21.69.28,1.05.18,41.5-11.43,196.72-191.47,233.88-235.11,1.01-1.18-.53-2.8-1.78-1.88-174.99,129.63-390.63-23.7-407.55-36.13ZM3112.68,731c-7.27,0-7.26-11.28,0-11.28s7.26,11.28,0,11.28Z"/>
+          <path class="cls-4" d="M3101.78,1074.54l12.77-16.2c3.09-3.93,9.17-3.51,11.7.81l8.38,14.31c2.17,3.71,7.12,4.65,10.51,1.99l17.35-13.63c2.83-2.22,3.55-6.21,1.67-9.29l-37.28-60.89c-2.73-4.46-9.17-4.54-12.01-.15l-39.65,61.33c-1.9,2.93-1.38,6.81,1.22,9.14l15.04,13.47c3.05,2.73,7.77,2.32,10.31-.89Z"/>
+          <polyline class="cls-13" points="3107.51 1146.52 3133.69 1146.52 3133.69 1139.94 3109.5 1136.5"/>
+          <rect class="cls-4" x="3046.91" y="1125.27" width="147.74" height="46" rx="23" ry="23"/>
+          <rect class="cls-5" x="3155" y="942" width="96" height="46" rx="23" ry="23"/>
+          <rect class="cls-4" x="3876" y="1066" width="19" height="20"/>
+          <polyline class="cls-14" points="2906.61 731 2971.72 550.38 3112 586.53"/>
+          <polyline class="cls-14" points="3312.9 731.23 3247.79 550.62 3107.51 586.76"/>
+          <polygon class="cls-3" points="3103.15 814.15 3120.09 814.25 3118.32 818.5 3106 819 3103.15 814.15"/>
+          <path class="cls-6" d="M3121.93,864s48.01,4.05,52.07,4-9.08,9.62-9.08,9.62l-26.3-1.75-22.62-5.06,5.93-6.81Z"/>
+          <path class="cls-4" d="M2991.76,931s42.45-8.79,72.85,5.61c0,0,3.29,43.56-15.16,59.98s-64.46-13.58-64.46-13.58c0,0-6.46-20,6.78-52Z"/>
+        </svg>
+        <span class="text-primary text-3xl">Cors</span><span class="text-white text-3xl">ava</span>
+      </a>
+
+      <div class="hidden md:flex space-x-10">
+        <a href="#features" class="relative text-gray-300 hover:text-primary transition-colors nav-link">Features</a>
+        <a href="#use-cases" class="relative text-gray-300 hover:text-primary transition-colors nav-link">Use Cases</a>
+        <a href="demo.html" class="relative text-gray-300 hover:text-primary transition-colors nav-link">Demo</a>
+      </div>
+
+      <div class="flex items-center space-x-6">
+        <a href="login.html" class="px-5 py-2.5 rounded-md bg-primary text-white hover:bg-opacity-80 transition-colors">
+          Login
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section id="top" class="relative min-h-screen flex items-center overflow-hidden pt-28">
+      <div class="absolute w-96 h-96 rounded-full bg-primary opacity-10 blur-3xl -top-20 -left-20 transition-transform duration-500 ease-out orb" id="orb1"></div>
+      <div class="absolute w-80 h-80 rounded-full bg-accent opacity-5 blur-3xl bottom-40 right-20 transition-transform duration-500 ease-out orb" id="orb2"></div>
+      <div class="absolute w-72 h-72 rounded-full bg-primary opacity-10 blur-3xl top-60 right-40 transition-transform duration-500 ease-out orb" id="orb3"></div>
+      
+      <div class="container mx-auto px-6 z-10">
+        <div class="max-w-3xl">
+          <h1 class="text-5xl md:text-6xl font-bold leading-tight mb-6">
+            Building the <span class="text-primary">infrastructure</span> for AI agents on the blockchain
+          </h1>
+          <p class="text-xl text-gray-300 mb-10">
+            Create, deploy, and monetize powerful AI agents across multiple blockchains with a standardized framework and open marketplace.
+          </p>
+          
+          <div class="flex flex-col sm:flex-row gap-4">
+            <a href="api-explorer.html" class="px-8 py-4 rounded-md bg-primary text-white hover:bg-opacity-80 transition-colors accent-glow">
+              Start Building
+            </a>
+          </div>
+          
+          <div class="mt-20 flex items-center space-x-6">
+            <p class="text-gray-400">Developed for</p>
+            <div class="flex space-x-8">
+              <img src="https://ethereum.org/_next/image/?url=%2F_next%2Fstatic%2Fmedia%2Feth-diamond-purple.7929ed26.png&w=1920&q=75" alt="Ethereum" class="h-8 opacity-75">
+              <img src="https://solana.com/src/img/branding/solanaLogoMark.svg" alt="Solana" class="h-8 opacity-75">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section id="features" class="py-24 bg-dark-800">
+      <div class="container mx-auto px-6">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold mb-4">Powerful Features for AI Agent Development</h2>
+          <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+            Everything you need to build, deploy, and monetize AI agents across the blockchain ecosystem.
+          </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+          <div class="bg-dark-700 p-8 rounded-lg shadow-lg hover:shadow-primary/20 transition-all duration-300 feature-card">
+            <div class="text-4xl mb-4 text-primary">🔄</div>
+            <h3 class="text-xl font-semibold mb-2 text-white">Cross-Chain Integration</h3>
+            <p class="text-gray-300">Deploy AI agents that work seamlessly across multiple blockchains without complex integrations.</p>
+          </div>
+
+          <div class="bg-dark-700 p-8 rounded-lg shadow-lg hover:shadow-primary/20 transition-all duration-300 feature-card">
+            <div class="text-4xl mb-4 text-primary">📐</div>
+            <h3 class="text-xl font-semibold mb-2 text-white">Standardized Protocol</h3>
+            <p class="text-gray-300">Build on a consistent API that handles the complexity of blockchain interactions.</p>
+          </div>
+
+          <div class="bg-dark-700 p-8 rounded-lg shadow-lg hover:shadow-primary/20 transition-all duration-300 feature-card">
+            <div class="text-4xl mb-4 text-primary">🛒</div>
+            <h3 class="text-xl font-semibold mb-2 text-white">Open Marketplace</h3>
+            <p class="text-gray-300">Buy, sell, and earn royalties from AI agents in a decentralized marketplace.</p>
+          </div>
+          
+          <div class="bg-dark-700 p-8 rounded-lg shadow-lg hover:shadow-primary/20 transition-all duration-300 feature-card">
+            <div class="text-4xl mb-4 text-primary">🔧</div>
+            <h3 class="text-xl font-semibold mb-2 text-white">Developer Tools</h3>
+            <p class="text-gray-300">Comprehensive SDK and tools to simplify agent creation and deployment.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+  <section id="use-cases" class="py-24 bg-dark-900">
+    <div class="container mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Key DeFi Use Cases</h2>
+        <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+          Discover how Corsava AI agents can supercharge your DeFi strategies.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div class="use-case-card bg-dark-800/50 rounded-xl p-6 hover:bg-dark-800 transition-all duration-300 border-l-4 border-primary">
+          <div class="flex mb-6">
+            <div class="flex-shrink-0 mr-4">
+              <div class="icon-container relative">
+                <div class="w-16 h-16 flex items-center justify-center rounded-lg bg-primary/20 shadow-md">
+                  <div class="dynamic-icon text-2xl text-primary">
+                    <i class="fas fa-exchange-alt"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 class="text-xl font-bold text-primary self-center">Liquidity Pool Management</h3>
+          </div>
+          <p class="text-gray-300">
+            AI agents continuously monitor and optimize liquidity pools—detect cross-chain imbalances, identify arbitrage
+            opportunities, execute profitable rebalances, and minimize impermanent loss.
+          </p>
+        </div>
+
+        <div class="use-case-card bg-dark-800/50 rounded-xl p-6 hover:bg-dark-800 transition-all duration-300 border-l-4 border-primary">
+          <div class="flex mb-6">
+            <div class="flex-shrink-0 mr-4">
+              <div class="icon-container relative">
+                <div class="w-16 h-16 flex items-center justify-center rounded-lg bg-primary/20 shadow-md">
+                  <div class="dynamic-icon text-2xl text-primary">
+                    <i class="fas fa-chart-line"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 class="text-xl font-bold text-primary self-center">Yield Optimization</h3>
+          </div>
+          <p class="text-gray-300">
+            Maximize returns across lending and farming protocols—monitor APYs, automatically reallocate assets to top strategies,
+            and execute complex multi-step yield strategies for peak performance.
+          </p>
+        </div>
+
+        <div class="use-case-card bg-dark-800/50 rounded-xl p-6 hover:bg-dark-800 transition-all duration-300 border-l-4 border-primary">
+          <div class="flex mb-6">
+            <div class="flex-shrink-0 mr-4">
+              <div class="icon-container relative">
+                <div class="w-16 h-16 flex items-center justify-center rounded-lg bg-primary/20 shadow-md">
+                  <div class="dynamic-icon text-2xl text-primary">
+                    <i class="fas fa-shield-alt"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 class="text-xl font-bold text-primary self-center">Risk Management</h3>
+          </div>
+          <p class="text-gray-300">
+            Protect your positions—monitor smart-contract vulnerabilities, protocol health and TVL changes, implement stop-loss
+            during volatility, and proactively safeguard assets across platforms.
+          </p>
+        </div>
+
+        <div class="use-case-card bg-dark-800/50 rounded-xl p-6 hover:bg-dark-800 transition-all duration-300 border-l-4 border-primary">
+          <div class="flex mb-6">
+            <div class="flex-shrink-0 mr-4">
+              <div class="icon-container relative">
+                <div class="w-16 h-16 flex items-center justify-center rounded-lg bg-primary/20 shadow-md">
+                  <div class="dynamic-icon text-2xl text-primary">
+                    <i class="fas fa-robot"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 class="text-xl font-bold text-primary self-center">Automated Trading</h3>
+          </div>
+          <p class="text-gray-300">
+            Execute sophisticated trading strategies—monitor on- and off-chain signals, adapt to market shifts, manage position sizing,
+            and optimize entry and exit points to capture alpha automatically.
+          </p>
+        </div>
+      </div>
+      
+      <div class="mt-12 flex justify-center">
+        <div class="use-case-card bg-dark-800/50 rounded-xl p-6 hover:bg-dark-800 transition-all duration-300 border-l-4 border-primary max-w-3xl">
+          <div class="flex mb-6">
+            <div class="flex-shrink-0 mr-4">
+              <div class="icon-container relative">
+                <div class="w-16 h-16 flex items-center justify-center rounded-lg bg-primary/20 shadow-md">
+                  <div class="dynamic-icon text-2xl text-primary">
+                    <i class="fas fa-coins"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 class="text-xl font-bold text-primary self-center">Lending &amp; Borrowing Optimization</h3>
+          </div>
+          <p class="text-gray-300">
+            Stay ahead of liquidations—dynamically adjust collateral, find the best lending rates, manage borrows based on interest
+            movements, automate loan repayments, and execute leverage strategies with controlled risk.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-16 text-center">
+        <a href="https://docs.corsava.org" class="px-8 py-4 rounded-md bg-primary text-white hover:bg-opacity-80 transition-colors accent-glow">
+          Explore the Full Docs
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-dark-800 text-white">
+    <div class="container mx-auto px-6 py-16">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div class="md:col-span-1">
+          <a href="#" class="text-2xl font-bold tracking-tight cursor-pointer">
+            <span class="text-primary">Cors</span><span class="text-white">ava</span>
+          </a>
+          <p class="mt-4 text-gray-400">
+            <span class="text-white">929 108th Ave NE, Unit 1311<br></span>
+            <span class="text-white">Bellevue, WA 98004</span>
+          </p>
+          <div class="mt-6 flex space-x-4">
+            <a href="https://www.twitter.com/CorsavaAgents" class="w-8 h-8 rounded-full bg-dark-600 flex items-center justify-center hover:bg-primary transition-colors">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="mailto:onboarding@corsava.org" class="w-8 h-8 rounded-full bg-dark-600 flex items-center justify-center hover:bg-primary transition-colors">
+              <i class="fa-solid fa-envelope"></i>
+            </a>
+            </a>
+          </div>
+        </div>
+        
+      </div>
+      
+      <div class="border-t border-dark-600 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <p class="text-gray-400 text-sm">
+          © 2025 Corsava. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      window.scrollTo(0, 0);
+      history.scrollRestoration = 'manual';
+      
+      const mouseFollower = document.getElementById('mouse-follower');
+      const mouseDot = document.getElementById('mouse-dot');
+      
+      document.addEventListener('mousemove', function(e) {
+        setTimeout(() => {
+          mouseFollower.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        }, 100);
+        
+        mouseDot.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        
+        const orbs = document.querySelectorAll('.orb');
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        
+        const moveX1 = (e.clientX - centerX) * 0.02;
+        const moveY1 = (e.clientY - centerY) * 0.02;
+        
+        const moveX2 = (e.clientX - centerX) * -0.01;
+        const moveY2 = (e.clientY - centerY) * -0.01;
+        
+        const moveX3 = (e.clientX - centerX) * 0.03;
+        const moveY3 = (e.clientY - centerY) * -0.03;
+        
+        if (orbs[0]) orbs[0].style.transform = `translate(${moveX1}px, ${moveY1}px)`;
+        if (orbs[1]) orbs[1].style.transform = `translate(${moveX2}px, ${moveY2}px)`;
+        if (orbs[2]) orbs[2].style.transform = `translate(${moveX3}px, ${moveY3}px)`;
+      });
+      
+
+      const featureCards = document.querySelectorAll('.feature-card');
+      
+      featureCards.forEach(card => {
+        card.addEventListener('mousemove', function(e) {
+          const rect = this.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          
+          const tiltX = (y - centerY) / 10;
+          const tiltY = -(x - centerX) / 10;
+          
+          this.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+        });
+        
+        card.addEventListener('mouseleave', function() {
+          this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+        });
+      });
+      
+
+      const navLinks = document.querySelectorAll('.nav-link');
+      
+      navLinks.forEach(link => {
+        link.addEventListener('mouseenter', function() {
+          if (!this.querySelector('.nav-underline')) {
+            const underline = document.createElement('span');
+            underline.classList.add('nav-underline');
+            underline.style.position = 'absolute';
+            underline.style.bottom = '-2px';
+            underline.style.left = '0';
+            underline.style.width = '0';
+            underline.style.height = '2px';
+            underline.style.backgroundColor = '#3aa7c1';
+            underline.style.transition = 'width 0.3s ease';
+            this.appendChild(underline);
+            
+            setTimeout(() => {
+              underline.style.width = '100%';
+            }, 10);
+          } else {
+            this.querySelector('.nav-underline').style.width = '100%';
+          }
+        });
+        
+        link.addEventListener('mouseleave', function() {
+          const underline = this.querySelector('.nav-underline');
+          if (underline) {
+            underline.style.width = '0';
+          }
+        });
+      });
+      
+      const navbar = document.getElementById('navbar');
+      
+      window.addEventListener('scroll', function() {
+        if (window.scrollY > 50) {
+          navbar.classList.add('bg-dark-800', 'shadow-lg', 'py-3');
+          navbar.classList.remove('py-6');
+        } else {
+          navbar.classList.remove('bg-dark-800', 'shadow-lg', 'py-3');
+          navbar.classList.add('py-6');
+        }
+      });
+      
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          const targetId = this.getAttribute('href');
+          if (targetId === '#') return;
+          
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        });
+      });
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+      function randomHex(len = 8) {
+        const chars = '0123456789abcdef';
+        let s = '';
+        for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)];
+        return s;
+      }
+      function randomChoice(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+      function randomFloat(min, max, decimals = 2) {
+        return parseFloat((Math.random() * (max - min) + min).toFixed(decimals));
+      }
+      function generateWalletAddress() {
+        return '0x' + randomHex(40);
+      }
+      function randomDateWithin(days) {
+        const now = Date.now();
+        const delta = Math.floor(Math.random() * days * 24 * 60 * 60 * 1000);
+        return new Date(now - delta).toISOString();
+      }
+
+      const chatWindow = document.getElementById('chat-window');
+      const chatInput = document.getElementById('chat-input-display');
+      const hiddenInput = document.getElementById('chat-input-hidden');
+      const sendMessageBtn = document.getElementById('send-message-btn');
+      const caseButtons = document.querySelectorAll('[data-case]');
+
+      let lastQueryType = '';
+      let conversationState = 'initial';
+      
+
+      const additionalStyles = `
+        <style>
+          .ai-response p {
+            margin-bottom: 0.75rem;
+          }
+          
+          .ai-response p:last-child {
+            margin-bottom: 0;
+          }
+          
+          .ai-response h3 {
+            font-weight: 600;
+            margin-top: 0.75rem;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+          }
+          
+          .ai-response ul {
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            list-style-type: disc;
+          }
+          
+          .ai-response ol {
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            list-style-type: decimal;
+          }
+          
+          .ai-response li {
+            margin-bottom: 0.25rem;
+          }
+          
+          .ai-response strong {
+            font-weight: 600;
+            color: #ffffff;
+          }
+          
+          .ai-response .protocol-data {
+            margin-left: 1rem;
+            margin-bottom: 0.75rem;
+          }
+          
+          .ai-response .agent-section {
+            margin-top: 0.75rem;
+            padding: 0.5rem 0;
+          }
+
+          /* Success indicators */
+          .success-indicator {
+            color: #4ADE80;
+          }
+          
+          .warning-indicator {
+            color: #FCD34D;
+          }
+          
+          .error-indicator {
+            color: #F87171;
+          }
+
+          /* Agent card styles */
+          .agent-card {
+            background-color: #252d3a;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 0.75rem 0;
+          }
+        </style>
+      `;
+      
+      document.head.insertAdjacentHTML('beforeend', additionalStyles);
+      
+      chatInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+      
+      chatInput.focus();
+
+      sendMessageBtn.addEventListener('click', sendMessage);
+
+      caseButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const caseType = btn.dataset.case;
+          simulateTyping(getPromptForCase(caseType));
+        });
+      });
+
+      function sendMessage() {
+        const message = chatInput.textContent.trim();
+        if (!message) return;
+        
+        appendUserMessage(message);
+
+        chatInput.textContent = '';
+        chatInput.focus();
+        
+
+        if (message.toLowerCase() === 'yes' && lastQueryType) {
+          generateFollowUpResponse(lastQueryType);
+        } else {
+
+          lastQueryType = identifyQueryType(message);
+          generateResponse(message);
+        }
+      }
+      
+      function simulateTyping(message) {
+
+        chatInput.contentEditable = "false";
+        sendMessageBtn.disabled = true;
+        sendMessageBtn.classList.add('opacity-50');
+
+        chatInput.textContent = '';
+        
+
+        let i = 0;
+        const typingSpeed = Math.min(25, Math.max(10, 40 - message.length / 20));
+        
+        const typeInterval = setInterval(() => {
+          if (i < message.length) {
+            chatInput.textContent += message.charAt(i);
+            i++;
+          } else {
+            clearInterval(typeInterval);
+            
+            setTimeout(() => {
+              chatInput.contentEditable = "true";
+              sendMessageBtn.disabled = false;
+              sendMessageBtn.classList.remove('opacity-50');
+              
+              sendMessage();
+            }, 500);
+          }
+        }, 1000 / typingSpeed);
+      }
+      
+      function getPromptForCase(caseType) {
+        switch(caseType) {
+          case 'lp':
+            return `Create a LiquidityOptimizer agent that continuously monitors the ETH/USDC pools on Ethereum and Polygon, detects imbalances greater than 2%, and automatically executes rebalances when gas prices are below 50 gwei, applying a 0.5% slippage tolerance and enabling impermanent loss protection.`;
+            
+          case 'yield':
+            return `Deploy a YieldMaximizer agent with $10,000 across Aave, Compound, Yearn, and Curve. Set riskTolerance to moderate (0.6), rebalance daily when APY differentials exceed 0.5%, optimize for minimal gas costs, and prioritize portfolio stability to maximize long-term returns.`;
+            
+          case 'risk':
+            return `Launch a DeFiShield agent to protect positions on Uniswap, Aave, and Compound. Monitor smart-contract vulnerabilities in real time, issue alerts if TVL drops by more than 10%, and trigger a stop-loss to USDC during sudden market swings to safeguard assets against large drawdowns.`;
+            
+          case 'trade':
+            return `Configure a DeFiTrader agent for ETH/USDC momentum trading: allow up to 5% of the portfolio per trade, enforce a 2% stop-loss and 5% take-profit, and adapt strategy parameters based on on-chain sentiment and off-chain news to capture opportunities automatically.`;
+            
+          case 'lend':
+            return `Create a LendingOptimizer agent on Aave V3 to manage collateral: maintain a minimum healthFactor of 1.5, dynamically top up or withdraw collateral to avoid liquidations, seek the lowest borrow rates across markets, and auto-repay when borrowing APR falls below 3% for efficient debt management.`;
+            
+          default:
+            return '';
+        }
+      }
+
+      function appendUserMessage(content) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('self-end', 'bg-primary', 'text-white', 'p-5', 'rounded-lg', 'max-w-[70%]', 'shadow-md');
+        
+        const nameEl = document.createElement('p');
+        nameEl.classList.add('mb-2', 'font-medium', 'text-primary-100');
+        nameEl.textContent = 'You';
+        
+        const contentEl = document.createElement('p');
+        contentEl.textContent = content;
+        
+        messageDiv.appendChild(nameEl);
+        messageDiv.appendChild(contentEl);
+        chatWindow.appendChild(messageDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      }
+      
+      function generateResponse(userMessage) {
+
+        const processingDiv = document.createElement('div');
+        processingDiv.classList.add('self-start', 'bg-dark-700', 'p-5', 'rounded-lg', 'max-w-[80%]', 'shadow-md');
+        
+        processingDiv.innerHTML = `
+          <p class="mb-2 font-medium text-primary">Corsava AI</p>
+          <div class="processing-animation">
+            <div class="text-gray-400 flex items-center">
+              <span>Processing</span>
+              <span class="thinking-dots"></span>
+            </div>
+          </div>
+        `;
+        
+        chatWindow.appendChild(processingDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        setTimeout(() => {
+          chatWindow.removeChild(processingDiv);
+          
+          let response = getResponseForQuery(userMessage);
+
+          const finalResponse = document.createElement('div');
+          finalResponse.classList.add('self-start', 'bg-dark-700', 'p-5', 'rounded-lg', 'max-w-[80%]', 'shadow-md');
+          
+          finalResponse.innerHTML = `
+            <p class="mb-2 font-medium text-primary">Corsava AI</p>
+            <div class="ai-response">
+              ${response}
+            </div>
+          `;
+          
+          chatWindow.appendChild(finalResponse);
+          chatWindow.scrollTop = chatWindow.scrollHeight;
+
+          updateApiResponseDisplay(identifyQueryType(userMessage));
+        }, 2000);
+      }
+
+      function generateFollowUpResponse(queryType) {
+
+        const processingDiv = document.createElement('div');
+        processingDiv.classList.add('self-start', 'bg-dark-700', 'p-5', 'rounded-lg', 'max-w-[80%]', 'shadow-md');
+        
+        processingDiv.innerHTML = `
+          <p class="mb-2 font-medium text-primary">Corsava AI</p>
+          <div class="processing-animation">
+            <div class="text-gray-400 flex items-center">
+              <span>Processing</span>
+              <span class="thinking-dots"></span>
+            </div>
+          </div>
+        `;
+        
+        chatWindow.appendChild(processingDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+        
+        setTimeout(() => {
+
+          chatWindow.removeChild(processingDiv);
+
+          let response = getFollowUpResponseForQuery(queryType);
+          
+          const finalResponse = document.createElement('div');
+          finalResponse.classList.add('self-start', 'bg-dark-700', 'p-5', 'rounded-lg', 'max-w-[80%]', 'shadow-md');
+          
+          finalResponse.innerHTML = `
+            <p class="mb-2 font-medium text-primary">Corsava AI</p>
+            <div class="ai-response">
+              ${response}
+            </div>
+          `;
+          
+          chatWindow.appendChild(finalResponse);
+          chatWindow.scrollTop = chatWindow.scrollHeight;
+          
+          updateApiResponseDisplay(queryType, true);
+          
+          lastQueryType = '';
+        }, 2000);
+      }
+      
+      function updateApiResponseDisplay(queryType, isDeployed = false) {
+        const apiResponseDiv = document.querySelector('.bg-dark-700.rounded-lg.p-4.font-mono');
+        
+        let apiResponse = {};
+        
+        if (queryType === 'lp') {
+          apiResponse = {
+            status: "success",
+            timestamp: new Date().toISOString(),
+            data: {
+              agentId: "agt_" + randomHex(8),
+              deploymentId: isDeployed ? "dep_" + randomHex(8) : null,
+              chain: "ethereum",
+              action: "LiquidityOptimizer",
+              parameters: {
+                imbalanceThreshold: "2%",
+                gasExecutionThreshold: "50 gwei",
+                slippageTolerance: "0.5%",
+                impermanentLossProtection: true
+              },
+              execution: {
+                status: isDeployed ? "active" : "pending",
+                currentState: {
+                  ethUsdcEthereumBalance: "balanced (0.4% imbalance)",
+                  ethUsdcPolygonBalance: "imbalanced (2.7% imbalance)",
+                  currentGasPrice: "63 gwei"
+                },
+                nextAction: isDeployed 
+                  ? "Monitoring pool imbalance" 
+                  : "Will execute rebalance when gas price drops below 50 gwei"
+              },
+              estimatedOptimization: {
+                annualizedYieldImprovement: "2.4-3.8%",
+                impermanentLossReduction: "60%"
+              }
+            }
+          };
+        } else if (queryType === 'yield') {
+          apiResponse = {
+            status: "success",
+            timestamp: new Date().toISOString(),
+            data: {
+              agentId: "agt_" + randomHex(8),
+              deploymentId: isDeployed ? "dep_" + randomHex(8) : null,
+              action: "YieldMaximizer",
+              parameters: {
+                initialAmount: "$10,000",
+                riskTolerance: "moderate (0.6)",
+                rebalanceFrequency: "daily",
+                apyDifferentialThreshold: "0.5%",
+                gasOptimization: true,
+                portfolioStability: "high"
+              },
+              allocation: {
+                "Aave V3": { amount: "$3,000 (30%)", currentAPY: "4.2%" },
+                "Compound": { amount: "$2,500 (25%)", currentAPY: "3.8%" },
+                "Yearn Finance": { amount: "$2,500 (25%)", currentAPY: "5.1%" },
+                "Curve Finance": { amount: "$2,000 (20%)", currentAPY: "6.3%" }
+              },
+              status: isDeployed ? "active" : "pending deployment",
+              projectedEarnings: {
+                monthlyUSD: "$24.31",
+                weightedAPY: "4.75%"
+              }
+            }
+          };
+        } else if (queryType === 'risk') {
+          apiResponse = {
+            status: "success",
+            timestamp: new Date().toISOString(),
+            data: {
+              agentId: "agt_" + randomHex(8),
+              deploymentId: isDeployed ? "dep_" + randomHex(8) : null,
+              action: "DeFiShield",
+              monitoredProtocols: ["Uniswap", "Aave", "Compound"],
+              securityFeatures: {
+                smartContractMonitoring: true,
+                tvlAlertThreshold: "10%",
+                marketVolatilityProtection: true,
+                stopLossTarget: "USDC"
+              },
+              protectionStatus: {
+                uniswapPositions: { status: "secure", riskLevel: "low" },
+                aavePositions: { status: "secure", healthFactor: 1.87 },
+                compoundPositions: { status: "attention needed", utilizationRate: "85%" }
+              },
+              totalProtectedValue: "$36,452",
+              status: isDeployed ? "monitoring" : "pending activation"
+            }
+          };
+        } else if (queryType === 'trade') {
+          apiResponse = {
+            status: "success",
+            timestamp: new Date().toISOString(),
+            data: {
+              agentId: "agt_" + randomHex(8),
+              deploymentId: isDeployed ? "dep_" + randomHex(8) : null,
+              action: "DeFiTrader",
+              tradingPair: "ETH/USDC",
+              parameters: {
+                maxPortfolioPerTrade: "5%",
+                stopLoss: "2%",
+                takeProfit: "5%",
+                strategy: "momentum"
+              },
+              marketConditions: {
+                currentPrice: "$2,245.68",
+                volatility24h: "2.8%",
+                sentiment: "neutral with bullish bias",
+                momentum: "weak"
+              },
+              tradingStatus: isDeployed ? "active - monitoring" : "awaiting deployment",
+              nextAction: "Waiting for stronger momentum signals"
+            }
+          };
+        } else if (queryType === 'lend') {
+          apiResponse = {
+            status: "success",
+            timestamp: new Date().toISOString(),
+            data: {
+              agentId: "agt_" + randomHex(8),
+              deploymentId: isDeployed ? "dep_" + randomHex(8) : null,
+              action: "LendingOptimizer",
+              platform: "Aave V3",
+              parameters: {
+                minHealthFactor: 1.5,
+                dynamicCollateralAdjustment: true,
+                repaymentThreshold: "3% APR",
+                lowestBorrowRateTarget: true
+              },
+              positionStatus: {
+                currentHealthFactor: 1.92,
+                collateralEfficiency: "78%",
+                borrowAPR: {
+                  USDC: "3.8%",
+                  ETH: "2.6%"
+                }
+              },
+              recommendations: {
+                action: "Convert part of USDC borrow to ETH borrow",
+                potentialSavings: "$54/year"
+              },
+              status: isDeployed ? "active - monitoring" : "awaiting deployment",
+              liquidationRisk: "low"
+            }
+          };
+        } else {
+          apiResponse = {
+            status: "waiting",
+            timestamp: new Date().toISOString(),
+            message: "Please select an agent type to view API response"
+          };
+        }
+        
+        apiResponseDiv.innerHTML = JSON.stringify(apiResponse, null, 2);
+      }
+      
+      function identifyQueryType(query) {
+        query = query.toLowerCase();
+        
+        if (query.includes('liquidity') || query.includes('pool') || query.includes('imbalance')) {
+          return 'lp';
+        } else if (query.includes('yield') || query.includes('apy') || query.includes('farm')) {
+          return 'yield';
+        } else if (query.includes('risk') || query.includes('shield') || query.includes('protect')) {
+          return 'risk';
+        } else if (query.includes('trade') || query.includes('momentum') || query.includes('stop-loss')) {
+          return 'trade';
+        } else if (query.includes('lend') || query.includes('borrow') || query.includes('collateral')) {
+          return 'lend';
+        } else {
+          return '';
+        }
+      }
+
+      function getResponseForQuery(query) {
+        const queryType = identifyQueryType(query);
+        
+        switch(queryType) {
+          case 'lp':
+            return `
+              <p>To optimize your liquidity pools across chains, I'll configure a <strong>LiquidityOptimizer agent</strong> with the following parameters:</p>
+              
+              <div class="agent-card">
+                <h3>🔄 Cross-Chain Liquidity Management</h3>
+                
+                <p><strong>Pool Monitoring:</strong></p>
+                <ul>
+                  <li>ETH/USDC on Ethereum Mainnet</li>
+                  <li>ETH/USDC on Polygon Network</li>
+                </ul>
+                
+                <p><strong>Optimization Parameters:</strong></p>
+                <ul>
+                  <li>Imbalance detection threshold: <span class="highlight">2%</span></li>
+                  <li>Gas price execution threshold: <span class="highlight">≤ 50 gwei</span></li>
+                  <li>Maximum slippage tolerance: <span class="highlight">0.5%</span></li>
+                  <li>Impermanent loss protection: <span class="success-indicator">✓ Enabled</span></li>
+                </ul>
+                
+                <p><strong>Automated Actions:</strong></p>
+                <ul>
+                  <li>24/7 pool imbalance monitoring</li>
+                  <li>Cross-chain arbitrage execution</li>
+                  <li>Auto-rebalancing to optimal ratios</li>
+                </ul>
+              </div>
+              
+              <p>This configuration will help maximize your returns while protecting against impermanent loss. The agent will continuously monitor both Ethereum and Polygon pools and execute rebalances only when gas prices are favorable.</p>
+              
+              <p>Would you like me to deploy this agent for your liquidity pools now?</p>
+            `;
+            
+          case 'yield':
+            return `
+              <p>Based on your requirements, I'll configure a <strong>YieldMaximizer agent</strong> to manage your $10,000 across multiple protocols:</p>
+              
+              <div class="agent-card">
+                <h3>📈 Yield Optimization Strategy</h3>
+                
+                <p><strong>Asset Allocation:</strong></p>
+                <ul>
+                  <li>Aave: <span class="highlight">30% ($3,000)</span></li>
+                  <li>Compound: <span class="highlight">25% ($2,500)</span></li>
+                  <li>Yearn Finance: <span class="highlight">25% ($2,500)</span></li>
+                  <li>Curve: <span class="highlight">20% ($2,000)</span></li>
+                </ul>
+                
+                <p><strong>Risk & Rebalancing Parameters:</strong></p>
+                <ul>
+                  <li>Risk tolerance: <span class="highlight">Moderate (0.6)</span></li>
+                  <li>Rebalancing frequency: <span class="highlight">Daily</span></li>
+                  <li>APY differential threshold: <span class="highlight">0.5%</span></li>
+                  <li>Gas optimization: <span class="success-indicator">✓ Enabled</span></li>
+                  <li>Portfolio stability: <span class="success-indicator">✓ High Priority</span></li>
+                </ul>
+              </div>
+              
+              <p>With this configuration, your agent will automatically shift assets to the highest-yielding protocols while maintaining your moderate risk profile. Based on current market conditions, this strategy should yield approximately <strong>4.5-5% APY</strong>.</p>
+              
+              <p>Would you like me to deploy this yield optimization agent now?</p>
+            `;
+            
+          case 'risk':
+            return `
+              <p>I'll configure a <strong>DeFiShield agent</strong> to protect your positions across multiple protocols:</p>
+              
+              <div class="agent-card">
+                <h3>🛡️ DeFi Protection System</h3>
+                
+                <p><strong>Protected Protocols:</strong></p>
+                <ul>
+                  <li>Uniswap</li>
+                  <li>Aave</li>
+                  <li>Compound</li>
+                </ul>
+                
+                <p><strong>Security Features:</strong></p>
+                <ul>
+                  <li>Smart contract vulnerability detection</li>
+                  <li>Real-time TVL monitoring (alert threshold: <span class="highlight">10% drop</span>)</li>
+                  <li>Automated stop-loss to USDC during market volatility</li>
+                  <li>24/7 security alert system</li>
+                </ul>
+                
+                <p><strong>Protection Actions:</strong></p>
+                <ul>
+                  <li>Auto-conversion to stablecoins during extreme volatility</li>
+                  <li>Protocol-specific alerts and notifications</li>
+                  <li>Immediate response to potential exploits</li>
+                </ul>
+              </div>
+              
+              <p>This agent will continuously monitor your positions and the overall health of each protocol, taking protective actions when necessary to safeguard your assets against significant drawdowns.</p>
+              
+              <p>Would you like me to activate this protection system for your DeFi positions?</p>
+            `;
+            
+          case 'trade':
+            return `
+              <p>I'll set up a <strong>DeFiTrader agent</strong> for ETH/USDC momentum trading with these specifications:</p>
+              
+              <div class="agent-card">
+                <h3>📊 Momentum Trading Strategy</h3>
+                
+                <p><strong>Position Management:</strong></p>
+                <ul>
+                  <li>Maximum per trade: <span class="highlight">5% of portfolio</span></li>
+                  <li>Stop-loss: <span class="highlight">2% below entry</span></li>
+                  <li>Take-profit: <span class="highlight">5% above entry</span></li>
+                </ul>
+                
+                <p><strong>Analysis Parameters:</strong></p>
+                <ul>
+                  <li>On-chain data: Volume, whale transactions, gas price trends</li>
+                  <li>Off-chain data: News sentiment, social metrics, market trends</li>
+                  <li>Technical indicators: RSI, MACD, volume profile</li>
+                </ul>
+                
+                <p><strong>Execution Settings:</strong></p>
+                <ul>
+                  <li>Primary DEXs: Uniswap V3, SushiSwap</li>
+                  <li>Slippage tolerance: 0.5%</li>
+                  <li>Gas optimization: Dynamic based on urgency</li>
+                </ul>
+              </div>
+              
+              <p>This trader will monitor market conditions 24/7 and automatically execute trades based on momentum signals, while strictly adhering to your risk management parameters to protect your capital.</p>
+              
+              <p>Would you like me to activate this trading strategy for your portfolio?</p>
+            `;
+            
+          case 'lend':
+            return `
+              <p>I'll create a <strong>LendingOptimizer agent</strong> on Aave V3 with these collateral management parameters:</p>
+              
+              <div class="agent-card">
+                <h3>💰 Lending Position Management</h3>
+                
+                <p><strong>Health Factor Management:</strong></p>
+                <ul>
+                  <li>Minimum health factor: <span class="highlight">1.5</span></li>
+                  <li>Dynamic collateral adjustment: <span class="success-indicator">✓ Enabled</span></li>
+                </ul>
+                
+                <p><strong>Optimization Features:</strong></p>
+                <ul>
+                  <li>Automatic market rate comparison</li>
+                  <li>Lowest borrow rate targeting</li>
+                  <li>Auto-repayment when APR falls below <span class="highlight">3%</span></li>
+                  <li>Collateral efficiency maximization</li>
+                </ul>
+                
+                <p><strong>Protection Mechanisms:</strong></p>
+                <ul>
+                  <li>Pre-liquidation warnings at health factor 1.3</li>
+                  <li>Emergency collateral top-up function</li>
+                  <li>Market volatility monitoring</li>
+                </ul>
+              </div>
+              
+              <p>This agent will manage your lending positions to maximize capital efficiency while ensuring you stay well-protected against potential liquidations. It will dynamically adjust your collateral as market conditions change.</p>
+              
+              <p>Would you like me to deploy this lending optimization agent for your Aave positions?</p>
+            `;
+            
+          default:
+            return `
+              <p>I understand you're interested in optimizing your DeFi strategy. To provide the most relevant assistance, could you specify which aspect you'd like to focus on?</p>
+              
+              <p>I can help with several DeFi optimizations:</p>
+              
+              <ul>
+                <li><strong>Liquidity Pool Management</strong> - Optimize your LP positions across chains</li>
+                <li><strong>Yield Farming Strategies</strong> - Maximize returns while managing risk</li>
+                <li><strong>Risk Management</strong> - Protect your positions against market volatility</li>
+                <li><strong>Automated Trading</strong> - Configure momentum and trend-following strategies</li>
+                <li><strong>Lending Optimization</strong> - Manage collateral and avoid liquidations</li>
+              </ul>
+              
+              <p>You can try one of the sample prompts above or tell me more specifically what you're looking to accomplish with Corsava.</p>
+            `;
+        }
+      }
+
+      function getFollowUpResponseForQuery(queryType) {
+        switch(queryType) {
+          case 'lp':
+            return `
+              <p>Great! I've deployed your <strong>LiquidityOptimizer agent</strong> successfully.</p>
+              
+              <div class="agent-card">
+                <h3 class="text-primary">✅ Deployment Complete</h3>
+                <p><strong>Agent ID:</strong> LQD-${randomHex(6).toUpperCase()}</p>
+                <p><strong>Status:</strong> <span class="success-indicator">Active</span></p>
+                
+                <p><strong>Initial Analysis:</strong></p>
+                <ul>
+                  <li>Current ETH/USDC Pool Status (Ethereum): <span class="highlight">Balanced (0.4% imbalance)</span></li>
+                  <li>Current ETH/USDC Pool Status (Polygon): <span class="highlight">Imbalanced (2.7% imbalance)</span></li>
+                </ul>
+                
+                <p><strong>First Action:</strong></p>
+                <p>The agent has identified an arbitrage opportunity on Polygon and will execute a rebalance once gas drops below 50 gwei (currently 63 gwei).</p>
+                
+                <p><strong>Estimated Optimization:</strong></p>
+                <p>Based on historical data, this strategy should improve your annualized yield by approximately 2.4-3.8% while reducing impermanent loss by up to 60%.</p>
+              </div>
+              
+              <p>Your dashboard has been updated with real-time monitoring of your liquidity positions. You'll receive notifications for all major actions taken by your agent.</p>
+              
+              <p>Would you like me to adjust any parameters or add additional pools to your optimization strategy?</p>
+            `;
+            
+          case 'yield':
+            return `
+              <p>Perfect! Your <strong>YieldMaximizer agent</strong> has been deployed and is already working.</p>
+              
+              <div class="agent-card">
+                <h3 class="text-primary">✅ Deployment Complete</h3>
+                <p><strong>Agent ID:</strong> YLD-${randomHex(6).toUpperCase()}</p>
+                <p><strong>Status:</strong> <span class="success-indicator">Active</span></p>
+                
+                <p><strong>Initial Allocation:</strong></p>
+                <ul>
+                  <li>Aave V3: 30% ($3,000) - Current APY: 4.2%</li>
+                  <li>Compound: 25% ($2,500) - Current APY: 3.8%</li>
+                  <li>Yearn Finance: 25% ($2,500) - Current APY: 5.1%</li>
+                  <li>Curve Finance: 20% ($2,000) - Current APY: 6.3%</li>
+                </ul>
+                
+                <p><strong>First Optimization:</strong></p>
+                <p>The agent has detected a new Curve gauge with 7.2% APY and will propose a rebalance tomorrow if the rate remains stable.</p>
+                
+                <p><strong>Projected Earnings:</strong></p>
+                <p>Based on current rates: <span class="success-indicator">$24.31 per month</span> (~4.75% APY weighted average)</p>
+              </div>
+              
+              <p>I've added a yield monitoring widget to your dashboard where you can track your earnings in real-time. The agent will automatically rebalance your assets when it detects significant APY differentials (>0.5%).</p>
+              
+              <p>Would you like to enable auto-compounding to reinvest your yields, or keep earnings in your wallet?</p>
+            `;
+            
+          case 'risk':
+            return `
+              <p>I've activated your <strong>DeFiShield protection system</strong> for your positions!</p>
+              
+              <div class="agent-card">
+                <h3 class="text-primary">✅ Security System Active</h3>
+                <p><strong>Agent ID:</strong> SEC-${randomHex(6).toUpperCase()}</p>
+                <p><strong>Status:</strong> <span class="success-indicator">Monitoring</span></p>
+                
+                <p><strong>Initial Security Scan:</strong></p>
+                <ul>
+                  <li>Uniswap Positions: <span class="success-indicator">● Secure</span></li>
+                  <li>Aave Positions: <span class="success-indicator">● Secure</span> (Health Factor: 1.87)</li>
+                  <li>Compound Positions: <span class="warning-indicator">● Attention</span> (Utilization Rate: 85%)</li>
+                </ul>
+                
+                <p><strong>Recommended Action:</strong></p>
+                <p>Your Compound position has a high utilization rate. The agent will monitor this closely and can automatically reduce your position if it exceeds 90%.</p>
+                
+                <p><strong>Protection Coverage:</strong></p>
+                <p>Your security system is monitoring $36,452 in total assets across 3 protocols and 5 positions.</p>
+              </div>
+              
+              <p>I've set up a security dashboard showing real-time risk metrics for all your positions. You'll receive immediate alerts for any security issues detected.</p>
+              
+              <p>The agent noticed your Compound position has a relatively high utilization rate. Would you like to add extra collateral as a safety buffer?</p>
+            `;
+            
+          case 'trade':
+            return `
+              <p>Your <strong>DeFiTrader agent</strong> is now live and ready to execute your momentum strategy!</p>
+              
+              <div class="agent-card">
+                <h3 class="text-primary">✅ Trading System Activated</h3>
+                <p><strong>Agent ID:</strong> TRD-${randomHex(6).toUpperCase()}</p>
+                <p><strong>Status:</strong> <span class="success-indicator">Active - Monitoring</span></p>
+                
+                <p><strong>Market Analysis:</strong></p>
+                <ul>
+                  <li>Current ETH Price: $2,245.68</li>
+                  <li>24h Volatility: 2.8%</li>
+                  <li>Market Sentiment: <span class="highlight">Neutral with Bullish Bias</span></li>
+                  <li>Current Momentum: <span class="warning-indicator">● Weak</span></li>
+                </ul>
+                
+                <p><strong>Position Status:</strong></p>
+                <p>Waiting for stronger buy/sell signals. The current market conditions don't meet the momentum thresholds you specified.</p>
+                
+                <p><strong>First Alert:</strong></p>
+                <p>The agent will notify you when it detects a high-confidence trading opportunity.</p>
+              </div>
+              
+              <p>Your trading dashboard is now live with real-time market data and position tracking. All trades will be automatically documented with performance metrics.</p>
+              
+              <p>Would you like to modify the momentum thresholds or add any specific technical indicators to your strategy?</p>
+            `;
+            
+          case 'lend':
+            return `
+              <p>Your <strong>LendingOptimizer agent</strong> is now active and managing your Aave positions!</p>
+              
+              <div class="agent-card">
+                <h3 class="text-primary">✅ Lending Optimization Active</h3>
+                <p><strong>Agent ID:</strong> LND-${randomHex(6).toUpperCase()}</p>
+                <p><strong>Status:</strong> <span class="success-indicator">Monitoring</span></p>
+                
+                <p><strong>Position Analysis:</strong></p>
+                <ul>
+                  <li>Current Health Factor: <span class="success-indicator">1.92</span> (Above your 1.5 threshold)</li>
+                  <li>Collateral Efficiency: <span class="highlight">78%</span></li>
+                  <li>Current Borrow APR: 3.8% (USDC), 2.6% (ETH)</li>
+                </ul>
+                
+                <p><strong>Recommended Optimization:</strong></p>
+                <p>Converting part of your USDC borrow to ETH borrow could save approximately 1.2% APR ($54/year based on current position).</p>
+                
+                <p><strong>Liquidation Risk:</strong></p>
+                <p><span class="success-indicator">Low</span> - Would require 48% ETH price drop to reach liquidation threshold</p>
+              </div>
+              
+              <p>Your lending dashboard now shows real-time health factors and optimization opportunities. The agent will automatically manage your collateral and protect against liquidation risks.</p>
+              
+              <p>Would you like to authorize the recommended borrow optimization to save on interest payments?</p>
+            `;
+            
+          default:
+            return `
+              <p>Great! Let me help you set up the right DeFi optimization for your needs.</p>
+              
+              <p>To get started, I'll need to know which specific area you'd like to focus on:</p>
+              
+              <div class="agent-card">
+                <h3>Choose Your Optimization Focus:</h3>
+                <ul>
+                  <li><strong>Liquidity Provision</strong> - Maximize returns from providing liquidity</li>
+                  <li><strong>Yield Farming</strong> - Optimize stablecoin or token yields</li>
+                  <li><strong>Risk Protection</strong> - Secure your positions against market risks</li>
+                  <li><strong>Automated Trading</strong> - Set up algorithmic trading strategies</li>
+                  <li><strong>Lending Management</strong> - Optimize borrowing and lending</li>
+                </ul>
+              </div>
+              
+              <p>You can try clicking one of the sample prompts above, or tell me more about your DeFi goals and portfolio composition so I can tailor my recommendations to your specific situation.</p>
+              
+              <p>What's your primary objective with your DeFi portfolio right now?</p>
+            `;
+        }
+      }
+
+      function randomHex(len = 8) {
+        const chars = '0123456789abcdef';
+        let s = '';
+        for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)];
+        return s;
+      }
+    });
+  </script>
+</body>
+</html>

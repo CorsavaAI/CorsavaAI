@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Corsava | Interactive DeFi Demo</title>
+  <meta name="description" content="Try Corsava's AI agent infrastructure with our interactive DeFi demo">
+
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3aa7c1',
+            accent: '#00ff00',
+            dark: {
+              900: '#0f1419',
+              800: '#151a21',
+              700: '#1c232d',
+              600: '#252d3a',
+              500: '#323d4d',
+            },
+          },
+          fontFamily: {
+            sans: ['DM Sans', 'Helvetica', 'Arial', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    body {
+      font-family: 'Archivo', Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-color: #0f1419;
+      color: #f3f4f6;
+    }
+    
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #1c232d;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #3aa7c1;
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #278aa3;
+    }
+
+    a, button {
+      transition: all 0.2s ease-in-out;
+    }
+
+    .success-indicator {
+      color: #4ADE80;
+    }
+    
+    .warning-indicator {
+      color: #FCD34D;
+    }
+    
+    .error-indicator {
+      color: #F87171;
+    }
+
+    .agent-card {
+      background-color: #252d3a;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin: 0.75rem 0;
+    }
+    
+    .thinking-dots::after {
+      content: '';
+      animation: thinking 1.5s infinite;
+      display: inline-block;
+      margin-left: 4px;
+    }
+    
+    @keyframes thinking {
+      0% { content: ''; }
+      25% { content: '.'; }
+      50% { content: '..'; }
+      75% { content: '...'; }
+      100% { content: ''; }
+    }
+  </style>
+</head>
+<body class="bg-dark-900">
+  <header class="bg-dark-800 shadow-lg">
+    <div class="container mx-auto px-6 py-5">
+      <div class="flex justify-between items-center">
+        <a href="index.html" class="flex items-center text-2xl font-bold tracking-tight cursor-pointer">
+          <span class="text-primary">Cors</span><span class="text-white">ava</span>
+        </a>
+        <div class="flex items-center space-x-4">
+          <a href="index.html" class="text-gray-300 hover:text-primary">
+            <i class="fas fa-arrow-left mr-2"></i>Back to Home
+          </a>
+          <a href="/login.html" class="px-5 py-2.5 rounded-md bg-primary text-white hover:bg-opacity-80 transition-colors">
+            Login
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container mx-auto px-6 py-12">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12">
+          <h1 class="text-3xl md:text-4xl font-bold mb-4">Interactive Demo</h1>
+          <p class="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            Try Corsava with sample prompts below, click one to see how your AI agent would respond.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-4 mb-10">
+          <button data-case="lp" class="px-6 py-3 bg-dark-700 hover:bg-dark-600 text-gray-200 rounded-lg transition-colors">Liquidity Pool</button>
+          <button data-case="yield" class="px-6 py-3 bg-dark-700 hover:bg-dark-600 text-gray-200 rounded-lg transition-colors">Yield Optimization</button>
+          <button data-case="risk" class="px-6 py-3 bg-dark-700 hover:bg-dark-600 text-gray-200 rounded-lg transition-colors">Risk Management</button>
+          <button data-case="trade" class="px-6 py-3 bg-dark-700 hover:bg-dark-600 text-gray-200 rounded-lg transition-colors">Automated Trading</button>
+          <button data-case="lend" class="px-6 py-3 bg-dark-700 hover:bg-dark-600 text-gray-200 rounded-lg transition-colors">Lending & Borrowing</button>
+        </div>
+
+        <div id="chat-window" class="bg-dark-800 p-8 rounded-xl h-[500px] overflow-y-auto flex flex-col space-y-6 shadow-xl border border-dark-600">
+          <div class="self-start bg-dark-700 text-gray-200 p-5 rounded-lg max-w-[80%] shadow-md">
+            <p class="mb-2 font-medium text-primary">Corsava AI</p>
+            <div class="ai-response">
+              <p>Welcome to Corsava! I'm your dedicated DeFi assistant. I can help with:</p>
+              <ul>
+                <li><strong>Yield optimization strategies</strong></li>
+                <li><strong>Portfolio management and rebalancing</strong></li>
+                <li><strong>Risk assessment and mitigation</strong></li>
+                <li><strong>Smart contract analysis</strong></li>
+                <li><strong>Agent configuration for automated DeFi</strong></li>
+              </ul>
+              <p>Try one of the sample prompts above</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex">
+          <div class="relative flex-1">
+            <input 
+              id="chat-input-hidden" 
+              type="text"
+              class="hidden"
+            >
+            <div 
+              id="chat-input-display" 
+              class="flex-1 bg-dark-700 text-white border border-dark-600 rounded-l-md px-4 py-3 min-h-[48px] focus:outline-none focus:border-primary overflow-hidden whitespace-pre-wrap"
+              contenteditable="true"
+              placeholder="Write your prompt here or click a sample above..."
+            ></div>
+          </div>
+          <button 
+            id="send-message-btn"
+            class="bg-primary hover:bg-opacity-90 text-white rounded-r-md px-6 py-3 font-medium"
+          >
+            <i class="fas fa-paper-plane mr-2"></i>Send
+          </button>
+        </div>
+
+        <div class="mt-12 bg-dark-800 rounded-lg shadow-lg p-6 border border-dark-600">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold text-white">API Response</h3>
+            <span class="text-sm text-gray-400">Sample response format for your agent request</span>
+          </div>
+          <div class="bg-dark-700 rounded-lg p-4 font-mono text-sm overflow-x-auto">
+            <pre class="text-gray-300">{
+  "status": "success",
+  "timestamp": "2025-04-24T15:42:31Z",
+  "data": {
+    "agentId": "agt_4f8e7b2c",
+    "deploymentId": "dep_a1c9d783",
+    "chain": "ethereum",
+    "action": "LiquidityOptimizer",
+    "parameters": {
+      "imbalanceThreshold": "2%",
+      "gasExecutionThreshold": "50 gwei",
+      "slippageTolerance": "0.5%",
+      "impermanentLossProtection": true
+    },
+    "execution": {
+      "status": "monitoring",
+      "currentState": {
+        "ethUsdcEthereumBalance": "balanced (0.4% imbalance)",
+        "ethUsdcPolygonBalance": "imbalanced (2.7% imbalance)",
+        "currentGasPrice": "63 gwei"
+      },
+      "nextAction": "Will execute rebalance when gas price drops below 50 gwei"
+    },
+    "estimatedOptimization": {
+      "annualizedYieldImprovement": "2.4-3.8%",
+      "impermanentLossReduction": "60%"
+    }
+  }
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-dark-800 text-white mt-12">
+    <div class="container mx-auto px-6 py-10">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="flex items-center">
+          <span class="text-xl font-bold tracking-tight cursor-pointer">
+            <span class="text-primary">Cors</span><span class="text-white">ava</span>
+          </span>
+          <span class="ml-4 text-sm text-gray-400">© 2025 Corsava. All rights reserved.</span>
+        </div>
+        <div class="mt-4 md:mt-0">
+          <a href="index.html" class="text-gray-400 hover:text-primary">
+            Return to Main Site
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      function randomHex(len = 8) {
+        const chars = '0123456789abcdef';
+        let s = '';
+        for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)];
+        return s;
+      }
+      function randomChoice(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+      function randomFloat(min, max, decimals = 2) {
+        return parseFloat((Math.random() * (max - min) + min).toFixed(decimals));
+      }
+      function generateWalletAddress() {
+        return '0x' + randomHex(40);
+      }
+      function randomDateWithin(days) {
+        const now = Date.now();
+        const delta = Math.floor(Math.random() * days * 24 * 60 * 60 * 1000);
+        return new Date(now - delta).toISOString();
+      }
+
+      const chatWindow = document.getElementById('chat-window');
+      const chatInput = document.getElementById('chat-input-display');
+      const hiddenInput = document.getElementById('chat-input-hidden');
+      const sendMessageBtn = document.getElementById('send-message-btn');
+      const caseButtons = document.querySelectorAll('[data-case]');
+
+      let lastQueryType = '';
+      let conversationState = 'initial';
+      
+
+      const additionalStyles = `
+        <style>
+          .ai-response p {
+            margin-bottom: 0.75rem;
+          }
+          
+          .ai-response p:last-child {
+            margin-bottom: 0;
+          }
+          
+          .ai-response h3 {
+            font-weight: 600;
+            margin-top: 0.75rem;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+          }
+          
+          .ai-response ul {
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            list-style-type: disc;
+          }
+          
+          .ai-response ol {
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            list-style-type: decimal;
+          }
+          
+          .ai-response li {
+            margin-bottom: 0.25rem;
+          }
+          
+          .ai-response strong {
+            font-weight: 600;
+            color: #ffffff;
+          }
+          
+          .ai-response .protocol-data {
+            margin-left: 1rem;
+            margin-bottom: 0.75rem;
+          }
+          
+          .ai-response .agent-section {
+            margin-top: 0.75rem;
+            padding: 0.5rem 0;
+          }
+        </style>
+      `;
+      
+      document.head.insertAdjacentHTML('beforeend', additionalStyles);
+      
+      chatInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+      
+      chatInput.focus();
+
+      sendMessageBtn.addEventListener('click', sendMessage);
+      
+      caseButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const caseType = btn.dataset.case;
+          simulateTyping(getPromptForCase(caseType));
+        });
+      });
+
+      function sendMessage() {
+        const message = chatInput.textContent.trim();
+        if (!message) return;
+        
+        appendUserMessage(message);
+
+        chatInput.textContent = '';
+        chatInput.focus();
+        
+
+        if (message.toLowerCase() === 'yes' && lastQueryType) {
+          generateFollowUpResponse(lastQueryType);
+        } else {
+
+          lastQueryType = identifyQueryType(message);
+          generateResponse(message);
+        }
+      }
+      
+      function simulateTyping(message) {
+
+        chatInput.contentEditable = "false";
+        sendMessageBtn.disabled = true;
+        sendMessageBtn.classList.add('opacity-50');
+
+        chatInput.textContent = '';
+        
+
+        let i = 0;
+        const typingSpeed = Math.min(25, Math.max(10, 40 - message.length / 20));
+        
+        const typeInterval = setInterval(() => {
+          if (i < message.length) {
+            chatInput.textContent += message.charAt(i);
+            i++;
+          } else {
+            clearInterval(typeInterval);
+            
+            setTimeout(() => {
+              chatInput.contentEditable = "true";
+              sendMessageBtn.disabled = false;
+              sendMessageBtn.classList.remove('opacity-50');
+              
+              sendMessage();
+            }, 500);
+          }
+        }, 1000 / typingSpeed);
+      }
+      
+      function getPromptForCase(caseType) {
+        switch(caseType) {
+          case 'lp':
+            return `Create a LiquidityOptimizer agent that continuously monitors the ETH/USDC pools on Ethereum and Polygon, detects imbalances greater than 2%, and automatically executes rebalances when gas prices are below 50 gwei, applying a 0.5% slippage tolerance and enabling impermanent loss protection.`;
+            
+          case 'yield':
+            return `Deploy a YieldMaximizer agent with $10,000 across Aave, Compound, Yearn, and Curve. Set riskTolerance to moderate (0.6), rebalance daily when APY differentials exceed 0.5%, optimize for minimal gas costs, and prioritize portfolio stability to maximize long-term returns.`;
+            
+          case 'risk':
+            return `Launch a DeFiShield agent to protect positions on Uniswap, Aave, and Compound. Monitor smart-contract vulnerabilities in real time, issue alerts if TVL drops by more than 10%, and trigger a stop-loss to USDC during sudden market swings to safeguard assets against large drawdowns.`;
+            
+          case 'trade':
+            return `Configure a DeFiTrader agent for ETH/USDC momentum trading: allow up to 5% of the portfolio per trade, enforce a 2% stop-loss and 5% take-profit, and adapt strategy parameters based on on-chain sentiment and off-chain news to capture opportunities automatically.`;
+            
+          case 'lend':
+            return `Create a LendingOptimizer agent on Aave V3 to manage collateral: maintain a minimum healthFactor of 1.5, dynamically top up or withdraw collateral to avoid liquidations, seek the lowest borrow rates across markets, and auto-repay when borrowing APR falls below 3% for efficient debt management.`;
+            
+          default:
+            return '';
+        }
+      }
+
+      function appendUserMessage(content) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('self-end', 'bg-primary', 'text-white', 'p-5', 'rounded-lg', 'max-w-[70%]', 'shadow-md');
+        
+        const nameEl = document.createElement('p');
+        nameEl.classList.add('mb-2', 'font-medium', 'text-primary-100');
+        nameEl.textContent = 'You';
+        
+        const contentEl = document.createElement('p');
+        contentEl.textContent = content;
+        
+        messageDiv.appendChild(nameEl);
+        messageDiv.appendChild(contentEl);
+        chatWindow.appendChild(messageDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      }
+      
+      function generateResponse(userMessage) {
+
+        const processingDiv = document.createElement('div');
+        processingDiv.classList.add('self-start', 'bg-dark-700', 'p-5', 'rounded-lg', 'max-w-[80%]', 'shadow-md');
+        
+        processingDiv.innerHTML = `
+          <p class="mb-2 font-medium text-primary">Corsava AI</p>
+          <div class="processing-animation">
+            <div class="text-gray-400 flex items-center">
+              <span>Processing</span>
+              <span class="thinking-dots"></span>
+            </div>
+          </div>
+        `;
+        
+        chatWindow.appendChild(processingDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        setTimeout(() => {
+          chatWindow.removeChild(processingDiv);
+          
+          let response = getResponseForQuery(userMessage);
+
+          const finalResponse = document.createElement('div');
+          finalResponse.classList.add('self-start', 'bg-dark-700', 'p-5', 'rounded-lg', 'max-w-[80%]', 'shadow-md');
+          
+          finalResponse.innerHTML = `
+            <p class="mb-2 font-medium text-primary">Corsava AI</p>
+            <div class="ai-response">
+              ${response}
+            </div>
+          `;
+          
+          chatWindow.appendChild(finalResponse);
+          chatWindow.scrollTop = chatWindow.scrollHeight;
+          
+          updateApiResponseDisplay(identifyQueryType(userMessage));
+        }, 2000);
+      }
+
+      function generateFollowUpResponse(queryType) {
+
+        const processingDiv = document.createElement('div');
+        processingDiv.classList.add('self-start', 'bg-dark-700', 'p-5', 'rounded-lg', 'max-w-[80%]', 'shadow-md');
+        
+        processingDiv.innerHTML = `
+          <p class="mb-2 font-medium text-primary">Corsava AI</p>
+          <div class="processing-animation">
+            <div class="text-gray-400 flex items-center">
+              <span>Processing</span>
+              <span class="thinking-dots"></span>
+            </div>
+          </div>
+        `;
+        
+        chatWindow.appendChild(processingDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+        
+        setTimeout(() => {
+
+          chatWindow.removeChild(processingDiv);
+
+          let response = getFollowUpResponseForQuery(queryType);
+          
+          const finalResponse = document.createElement('div');
+          finalResponse.classList.add('self-start', 'bg-dark-700', 'p-5', 'rounded-lg', 'max-w-[80%]', 'shadow-md');
+          
+          finalResponse.innerHTML = `
+            <p class="mb-2 font-medium text-primary">Corsava AI</p>
+            <div class="ai-response">
+              ${response}
+            </div>
+          `;
+          
+          chatWindow.appendChild(finalResponse);
+          chatWindow.scrollTop = chatWindow.scrollHeight;
+          
+          updateApiResponseDisplay(queryType, true);
+          
+          lastQueryType = '';
+        }, 2000);
+      }
+      
+      function updateApiResponseDisplay(queryType, isDeployed = false) {
+        const apiResponseDiv = document.querySelector('.bg-dark-700.rounded-lg.p-4.font-mono');
+        
+        let apiResponse = {};
+        
+        if (queryType === 'lp') {
+          apiResponse = {
+            status: "success",
+            timestamp: new Date().toISOString(),
+            data: {
+              agentId: "agt_" + randomHex(8),
+              deploymentId: isDeployed ? "dep_" + randomHex(8) : null,
+              chain: "ethereum",
+              action: "LiquidityOptimizer",
+              parameters: {
+                imbalanceThreshold: "2%",
+                gasExecutionThreshold: "50 gwei",
+                slippageTolerance: "0.5%",
+                impermanentLossProtection: true
+              },
+              execution: {
+                status: isDeployed ? "active" : "pending",
+                currentState: {
+                  ethUsdcEthereumBalance: "balanced (0.4% imbalance)",
+                  ethUsdcPolygonBalance: "imbalanced (2.7% imbalance)",
+                  currentGasPrice: "63 gwei"
+                },
+                nextAction: isDeployed 
+                  ? "Monitoring pool imbalance" 
+                  : "Will execute rebalance when gas price drops below 50 gwei"
+              },
+              estimatedOptimization: {
+                annualizedYieldImprovement: "2.4-3.8%",
+                impermanentLossReduction: "60%"
+              }
+            }
+          };
+        } else if (queryType === 'yield') {
+          apiResponse = {
+            status: "success",
+            timestamp: new Date().toISOString(),
+            data: {
+              agentId: "agt_" + randomHex(8),
+              deploymentId: isDeployed ? "dep_" + randomHex(8) : null,
+              action: "YieldMaximizer",
+              parameters: {
+                initialAmount: "$10,000",
+                riskTolerance: "moderate (0.6)",
+                rebalanceFrequency: "daily",
+                apyDifferentialThreshold: "0.5%",
+                gasOptimization: true,
+                portfolioStability: "high"
+              },
+              allocation: {
+                "Aave V3": { amount: "$3,000 (30%)", currentAPY: "4.2%" },
+                "Compound": { amount: "$2,500 (25%)", currentAPY: "3.8%" },
+                "Yearn Finance": { amount: "$2,500 (25%)", currentAPY: "5.1%" },
+                "Curve Finance": { amount: "$2,000 (20%)", currentAPY: "6.3%" }
+              },
+              status: isDeployed ? "active" : "pending deployment",
+              projectedEarnings: {
+                monthlyUSD: "$24.31",
+                weightedAPY: "4.75%"
+              }
+            }
+          };
+        } else if (queryType === 'risk') {
+          apiResponse = {
+            status: "success",
+            timestamp: new Date().toISOString(),
+            data: {
+              agentId: "agt_" + randomHex(8),
+              deploymentId: isDeployed ? "dep_" + randomHex(8) : null,
+              action: "DeFiShield",
+              monitoredProtocols: ["Uniswap", "Aave", "Compound"],
+              securityFeatures: {
+                smartContractMonitoring: true,
+                tvlAlertThreshold: "10%",
+                marketVolatilityProtection: true,
+                stopLossTarget: "USDC"
+              },
+              protectionStatus: {
+                uniswapPositions: { status: "secure", riskLevel: "low" },
+                aavePositions: { status: "secure", healthFactor: 1.87 },
+                compoundPositions: { status: "attention needed", utilizationRate: "85%" }
+              },
+              totalProtectedValue: "$36,452",
+              status: isDeployed ? "monitoring" : "pending activation"
+            }
+          };
+        } else if (queryType === 'trade') {
+          apiResponse = {
+            status: "success",
+            timestamp: new Date().toISOString(),
+            data: {
+              agentId: "agt_" + randomHex(8),
+              deploymentId: isDeployed ? "dep_" + randomHex(8) : null,
+              action: "DeFiTrader",
+              tradingPair: "ETH/USDC",
+              parameters: {
+                maxPortfolioPerTrade: "5%",
+                stopLoss: "2%",
+                takeProfit: "5%",
+                strategy: "momentum"
+              },
+              marketConditions: {
+                currentPrice: "$2,245.68",
+                volatility24h: "2.8%",
+                sentiment: "neutral with bullish bias",
+                momentum: "weak"
+              },
+              tradingStatus: isDeployed ? "active - monitoring" : "awaiting deployment",
+              nextAction: "Waiting for stronger momentum signals"
+            }
+          };
+        } else if (queryType === 'lend') {
+          apiResponse = {
+            status: "success",
+            timestamp: new Date().toISOString(),
+            data: {
+              agentId: "agt_" + randomHex(8),
+              deploymentId: isDeployed ? "dep_" + randomHex(8) : null,
+              action: "LendingOptimizer",
+              platform: "Aave V3",
+              parameters: {
+                minHealthFactor: 1.5,
+                dynamicCollateralAdjustment: true,
+                repaymentThreshold: "3% APR",
+                lowestBorrowRateTarget: true
+              },
+              positionStatus: {
+                currentHealthFactor: 1.92,
+                collateralEfficiency: "78%",
+                borrowAPR: {
+                  USDC: "3.8%",
+                  ETH: "2.6%"
+                }
+              },
+              recommendations: {
+                action: "Convert part of USDC borrow to ETH borrow",
+                potentialSavings: "$54/year"
+              },
+              status: isDeployed ? "active - monitoring" : "awaiting deployment",
+              liquidationRisk: "low"
+            }
+          };
+        } else {
+          apiResponse = {
+            status: "waiting",
+            timestamp: new Date().toISOString(),
+            message: "Please select an agent type to view API response"
+          };
+        }
+        
+        apiResponseDiv.innerHTML = JSON.stringify(apiResponse, null, 2);
+      }
+      
+      function identifyQueryType(query) {
+        query = query.toLowerCase();
+        
+        if (query.includes('liquidity') || query.includes('pool') || query.includes('imbalance')) {
+          return 'lp';
+        } else if (query.includes('yield') || query.includes('apy') || query.includes('farm')) {
+          return 'yield';
+        } else if (query.includes('risk') || query.includes('shield') || query.includes('protect')) {
+          return 'risk';
+        } else if (query.includes('trade') || query.includes('momentum') || query.includes('stop-loss')) {
+          return 'trade';
+        } else if (query.includes('lend') || query.includes('borrow') || query.includes('collateral')) {
+          return 'lend';
+        } else {
+          return '';
+        }
+      }
+
+      function getResponseForQuery(query) {
+        const queryType = identifyQueryType(query);
+        
+        switch(queryType) {
+          case 'lp':
+            return `
+              <p>To optimize your liquidity pools across chains, I'll configure a <strong>LiquidityOptimizer agent</strong> with the following parameters:</p>
+              
+              <div class="agent-card">
+                <h3>🔄 Cross-Chain Liquidity Management</h3>
+                
+                <p><strong>Pool Monitoring:</strong></p>
+                <ul>
+                  <li>ETH/USDC on Ethereum Mainnet</li>
+                  <li>ETH/USDC on Polygon Network</li>
+                </ul>
+                
+                <p><strong>Optimization Parameters:</strong></p>
+                <ul>
+                  <li>Imbalance detection threshold: <span class="highlight">2%</span></li>
+                  <li>Gas price execution threshold: <span class="highlight">≤ 50 gwei</span></li>
+                  <li>Maximum slippage tolerance: <span class="highlight">0.5%</span></li>
+                  <li>Impermanent loss protection: <span class="success-indicator">✓ Enabled</span></li>
+                </ul>
+                
+                <p><strong>Automated Actions:</strong></p>
+                <ul>
+                  <li>24/7 pool imbalance monitoring</li>
+                  <li>Cross-chain arbitrage execution</li>
+                  <li>Auto-rebalancing to optimal ratios</li>
+                </ul>
+              </div>
+              
+              <p>This configuration will help maximize your returns while protecting against impermanent loss. The agent will continuously monitor both Ethereum and Polygon pools and execute rebalances only when gas prices are favorable.</p>
+              
+              <p>Would you like me to deploy this agent for your liquidity pools now?</p>
+            `;
+            
+          case 'yield':
+            return `
+              <p>Based on your requirements, I'll configure a <strong>YieldMaximizer agent</strong> to manage your $10,000 across multiple protocols:</p>
+              
+              <div class="agent-card">
+                <h3>📈 Yield Optimization Strategy</h3>
+                
+                <p><strong>Asset Allocation:</strong></p>
+                <ul>
+                  <li>Aave: <span class="highlight">30% ($3,000)</span></li>
+                  <li>Compound: <span class="highlight">25% ($2,500)</span></li>
+                  <li>Yearn Finance: <span class="highlight">25% ($2,500)</span></li>
+                  <li>Curve: <span class="highlight">20% ($2,000)</span></li>
+                </ul>
+                
+                <p><strong>Risk & Rebalancing Parameters:</strong></p>
+                <ul>
+                  <li>Risk tolerance: <span class="highlight">Moderate (0.6)</span></li>
+                  <li>Rebalancing frequency: <span class="highlight">Daily</span></li>
+                  <li>APY differential threshold: <span class="highlight">0.5%</span></li>
+                  <li>Gas optimization: <span class="success-indicator">✓ Enabled</span></li>
+                  <li>Portfolio stability: <span class="success-indicator">✓ High Priority</span></li>
+                </ul>
+              </div>
+              
+              <p>With this configuration, your agent will automatically shift assets to the highest-yielding protocols while maintaining your moderate risk profile. Based on current market conditions, this strategy should yield approximately <strong>4.5-5% APY</strong>.</p>
+              
+              <p>Would you like me to deploy this yield optimization agent now?</p>
+            `;
+            
+          case 'risk':
+            return `
+              <p>I'll configure a <strong>DeFiShield agent</strong> to protect your positions across multiple protocols:</p>
+              
+              <div class="agent-card">
+                <h3>🛡️ DeFi Protection System</h3>
+                
+                <p><strong>Protected Protocols:</strong></p>
+                <ul>
+                  <li>Uniswap</li>
+                  <li>Aave</li>
+                  <li>Compound</li>
+                </ul>
+                
+                <p><strong>Security Features:</strong></p>
+                <ul>
+                  <li>Smart contract vulnerability detection</li>
+                  <li>Real-time TVL monitoring (alert threshold: <span class="highlight">10% drop</span>)</li>
+                  <li>Automated stop-loss to USDC during market volatility</li>
+                  <li>24/7 security alert system</li>
+                </ul>
+                
+                <p><strong>Protection Actions:</strong></p>
+                <ul>
+                  <li>Auto-conversion to stablecoins during extreme volatility</li>
+                  <li>Protocol-specific alerts and notifications</li>
+                  <li>Immediate response to potential exploits</li>
+                </ul>
+              </div>
+              
+              <p>This agent will continuously monitor your positions and the overall health of each protocol, taking protective actions when necessary to safeguard your assets against significant drawdowns.</p>
+              
+              <p>Would you like me to activate this protection system for your DeFi positions?</p>
+            `;
+            
+          case 'trade':
+            return `
+              <p>I'll set up a <strong>DeFiTrader agent</strong> for ETH/USDC momentum trading with these specifications:</p>
+              
+              <div class="agent-card">
+                <h3>📊 Momentum Trading Strategy</h3>
+                
+                <p><strong>Position Management:</strong></p>
+                <ul>
+                  <li>Maximum per trade: <span class="highlight">5% of portfolio</span></li>
+                  <li>Stop-loss: <span class="highlight">2% below entry</span></li>
+                  <li>Take-profit: <span class="highlight">5% above entry</span></li>
+                </ul>
+                
+                <p><strong>Analysis Parameters:</strong></p>
+                <ul>
+                  <li>On-chain data: Volume, whale transactions, gas price trends</li>
+                  <li>Off-chain data: News sentiment, social metrics, market trends</li>
+                  <li>Technical indicators: RSI, MACD, volume profile</li>
+                </ul>
+                
+                <p><strong>Execution Settings:</strong></p>
+                <ul>
+                  <li>Primary DEXs: Uniswap V3, SushiSwap</li>
+                  <li>Slippage tolerance: 0.5%</li>
+                  <li>Gas optimization: Dynamic based on urgency</li>
+                </ul>
+              </div>
+              
+              <p>This trader will monitor market conditions 24/7 and automatically execute trades based on momentum signals, while strictly adhering to your risk management parameters to protect your capital.</p>
+              
+              <p>Would you like me to activate this trading strategy for your portfolio?</p>
+            `;
+            
+          case 'lend':
+            return `
+              <p>I'll create a <strong>LendingOptimizer agent</strong> on Aave V3 with these collateral management parameters:</p>
+              
+              <div class="agent-card">
+                <h3>💰 Lending Position Management</h3>
+                
+                <p><strong>Health Factor Management:</strong></p>
+                <ul>
+                  <li>Minimum health factor: <span class="highlight">1.5</span></li>
+                  <li>Dynamic collateral adjustment: <span class="success-indicator">✓ Enabled</span></li>
+                </ul>
+                
+                <p><strong>Optimization Features:</strong></p>
+                <ul>
+                  <li>Automatic market rate comparison</li>
+                  <li>Lowest borrow rate targeting</li>
+                  <li>Auto-repayment when APR falls below <span class="highlight">3%</span></li>
+                  <li>Collateral efficiency maximization</li>
+                </ul>
+                
+                <p><strong>Protection Mechanisms:</strong></p>
+                <ul>
+                  <li>Pre-liquidation warnings at health factor 1.3</li>
+                  <li>Emergency collateral top-up function</li>
+                  <li>Market volatility monitoring</li>
+                </ul>
+              </div>
+              
+              <p>This agent will manage your lending positions to maximize capital efficiency while ensuring you stay well-protected against potential liquidations. It will dynamically adjust your collateral as market conditions change.</p>
+              
+              <p>Would you like me to deploy this lending optimization agent for your Aave positions?</p>
+            `;
+            
+          default:
+            return `
+              <p>I understand you're interested in optimizing your DeFi strategy. To provide the most relevant assistance, could you specify which aspect you'd like to focus on?</p>
+              
+              <p>I can help with several DeFi optimizations:</p>
+              
+              <ul>
+                <li><strong>Liquidity Pool Management</strong> - Optimize your LP positions across chains</li>
+                <li><strong>Yield Farming Strategies</strong> - Maximize returns while managing risk</li>
+                <li><strong>Risk Management</strong> - Protect your positions against market volatility</li>
+                <li><strong>Automated Trading</strong> - Configure momentum and trend-following strategies</li>
+                <li><strong>Lending Optimization</strong> - Manage collateral and avoid liquidations</li>
+              </ul>
+              
+              <p>You can try one of the sample prompts above or tell me more specifically what you're looking to accomplish with Corsava.</p>
+            `;
+        }
+      }
+
+      function getFollowUpResponseForQuery(queryType) {
+        switch(queryType) {
+          case 'lp':
+            return `
+              <p>Great! I've deployed your <strong>LiquidityOptimizer agent</strong> successfully.</p>
+              
+              <div class="agent-card">
+                <h3 class="text-primary">✅ Deployment Complete</h3>
+                <p><strong>Agent ID:</strong> LQD-${randomHex(6).toUpperCase()}</p>
+                <p><strong>Status:</strong> <span class="success-indicator">Active</span></p>
+                
+                <p><strong>Initial Analysis:</strong></p>
+                <ul>
+                  <li>Current ETH/USDC Pool Status (Ethereum): <span class="highlight">Balanced (0.4% imbalance)</span></li>
+                  <li>Current ETH/USDC Pool Status (Polygon): <span class="highlight">Imbalanced (2.7% imbalance)</span></li>
+                </ul>
+                
+                <p><strong>First Action:</strong></p>
+                <p>The agent has identified an arbitrage opportunity on Polygon and will execute a rebalance once gas drops below 50 gwei (currently 63 gwei).</p>
+                
+                <p><strong>Estimated Optimization:</strong></p>
+                <p>Based on historical data, this strategy should improve your annualized yield by approximately 2.4-3.8% while reducing impermanent loss by up to 60%.</p>
+              </div>
+              
+              <p>Your dashboard has been updated with real-time monitoring of your liquidity positions. You'll receive notifications for all major actions taken by your agent.</p>
+              
+              <p>Would you like me to adjust any parameters or add additional pools to your optimization strategy?</p>
+            `;
+            
+          case 'yield':
+            return `
+              <p>Perfect! Your <strong>YieldMaximizer agent</strong> has been deployed and is already working.</p>
+              
+              <div class="agent-card">
+                <h3 class="text-primary">✅ Deployment Complete</h3>
+                <p><strong>Agent ID:</strong> YLD-${randomHex(6).toUpperCase()}</p>
+                <p><strong>Status:</strong> <span class="success-indicator">Active</span></p>
+                
+                <p><strong>Initial Allocation:</strong></p>
+                <ul>
+                  <li>Aave V3: 30% ($3,000) - Current APY: 4.2%</li>
+                  <li>Compound: 25% ($2,500) - Current APY: 3.8%</li>
+                  <li>Yearn Finance: 25% ($2,500) - Current APY: 5.1%</li>
+                  <li>Curve Finance: 20% ($2,000) - Current APY: 6.3%</li>
+                </ul>
+                
+                <p><strong>First Optimization:</strong></p>
+                <p>The agent has detected a new Curve gauge with 7.2% APY and will propose a rebalance tomorrow if the rate remains stable.</p>
+                
+                <p><strong>Projected Earnings:</strong></p>
+                <p>Based on current rates: <span class="success-indicator">$24.31 per month</span> (~4.75% APY weighted average)</p>
+              </div>
+              
+              <p>I've added a yield monitoring widget to your dashboard where you can track your earnings in real-time. The agent will automatically rebalance your assets when it detects significant APY differentials (>0.5%).</p>
+              
+              <p>Would you like to enable auto-compounding to reinvest your yields, or keep earnings in your wallet?</p>
+            `;
+            
+          case 'risk':
+            return `
+              <p>I've activated your <strong>DeFiShield protection system</strong> for your positions!</p>
+              
+              <div class="agent-card">
+                <h3 class="text-primary">✅ Security System Active</h3>
+                <p><strong>Agent ID:</strong> SEC-${randomHex(6).toUpperCase()}</p>
+                <p><strong>Status:</strong> <span class="success-indicator">Monitoring</span></p>
+                
+                <p><strong>Initial Security Scan:</strong></p>
+                <ul>
+                  <li>Uniswap Positions: <span class="success-indicator">● Secure</span></li>
+                  <li>Aave Positions: <span class="success-indicator">● Secure</span> (Health Factor: 1.87)</li>
+                  <li>Compound Positions: <span class="warning-indicator">● Attention</span> (Utilization Rate: 85%)</li>
+                </ul>
+                
+                <p><strong>Recommended Action:</strong></p>
+                <p>Your Compound position has a high utilization rate. The agent will monitor this closely and can automatically reduce your position if it exceeds 90%.</p>
+                
+                <p><strong>Protection Coverage:</strong></p>
+                <p>Your security system is monitoring $36,452 in total assets across 3 protocols and 5 positions.</p>
+              </div>
+              
+              <p>I've set up a security dashboard showing real-time risk metrics for all your positions. You'll receive immediate alerts for any security issues detected.</p>
+              
+              <p>The agent noticed your Compound position has a relatively high utilization rate. Would you like to add extra collateral as a safety buffer?</p>
+            `;
+            
+          case 'trade':
+            return `
+              <p>Your <strong>DeFiTrader agent</strong> is now live and ready to execute your momentum strategy!</p>
+              
+              <div class="agent-card">
+                <h3 class="text-primary">✅ Trading System Activated</h3>
+                <p><strong>Agent ID:</strong> TRD-${randomHex(6).toUpperCase()}</p>
+                <p><strong>Status:</strong> <span class="success-indicator">Active - Monitoring</span></p>
+                
+                <p><strong>Market Analysis:</strong></p>
+                <ul>
+                  <li>Current ETH Price: $2,245.68</li>
+                  <li>24h Volatility: 2.8%</li>
+                  <li>Market Sentiment: <span class="highlight">Neutral with Bullish Bias</span></li>
+                  <li>Current Momentum: <span class="warning-indicator">● Weak</span></li>
+                </ul>
+                
+                <p><strong>Position Status:</strong></p>
+                <p>Waiting for stronger buy/sell signals. The current market conditions don't meet the momentum thresholds you specified.</p>
+                
+                <p><strong>First Alert:</strong></p>
+                <p>The agent will notify you when it detects a high-confidence trading opportunity.</p>
+              </div>
+              
+              <p>Your trading dashboard is now live with real-time market data and position tracking. All trades will be automatically documented with performance metrics.</p>
+              
+              <p>Would you like to modify the momentum thresholds or add any specific technical indicators to your strategy?</p>
+            `;
+            
+          case 'lend':
+            return `
+              <p>Your <strong>LendingOptimizer agent</strong> is now active and managing your Aave positions!</p>
+              
+              <div class="agent-card">
+                <h3 class="text-primary">✅ Lending Optimization Active</h3>
+                <p><strong>Agent ID:</strong> LND-${randomHex(6).toUpperCase()}</p>
+                <p><strong>Status:</strong> <span class="success-indicator">Monitoring</span></p>
+                
+                <p><strong>Position Analysis:</strong></p>
+                <ul>
+                  <li>Current Health Factor: <span class="success-indicator">1.92</span> (Above your 1.5 threshold)</li>
+                  <li>Collateral Efficiency: <span class="highlight">78%</span></li>
+                  <li>Current Borrow APR: 3.8% (USDC), 2.6% (ETH)</li>
+                </ul>
+                
+                <p><strong>Recommended Optimization:</strong></p>
+                <p>Converting part of your USDC borrow to ETH borrow could save approximately 1.2% APR ($54/year based on current position).</p>
+                
+                <p><strong>Liquidation Risk:</strong></p>
+                <p><span class="success-indicator">Low</span> - Would require 48% ETH price drop to reach liquidation threshold</p>
+              </div>
+              
+              <p>Your lending dashboard now shows real-time health factors and optimization opportunities. The agent will automatically manage your collateral and protect against liquidation risks.</p>
+              
+              <p>Would you like to authorize the recommended borrow optimization to save on interest payments?</p>
+            `;
+            
+          default:
+            return `
+              <p>Great! Let me help you set up the right DeFi optimization for your needs.</p>
+              
+              <p>To get started, I'll need to know which specific area you'd like to focus on:</p>
+              
+              <div class="agent-card">
+                <h3>Choose Your Optimization Focus:</h3>
+                <ul>
+                  <li><strong>Liquidity Provision</strong> - Maximize returns from providing liquidity</li>
+                  <li><strong>Yield Farming</strong> - Optimize stablecoin or token yields</li>
+                  <li><strong>Risk Protection</strong> - Secure your positions against market risks</li>
+                  <li><strong>Automated Trading</strong> - Set up algorithmic trading strategies</li>
+                  <li><strong>Lending Management</strong> - Optimize borrowing and lending</li>
+                </ul>
+              </div>
+              
+              <p>You can try clicking one of the sample prompts above, or tell me more about your DeFi goals and portfolio composition so I can tailor my recommendations to your specific situation.</p>
+              
+              <p>What's your primary objective with your DeFi portfolio right now?</p>
+            `;
+        }
+      }
+    });
+  </script>
+</body>
+</html>
